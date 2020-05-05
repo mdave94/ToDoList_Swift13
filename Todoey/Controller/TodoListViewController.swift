@@ -53,9 +53,6 @@ class TodoListViewController: UITableViewController {
     
     
     
-    
-    
-    
     //MARK:- Delegation methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -120,9 +117,8 @@ class TodoListViewController: UITableViewController {
     }
     //MARK: - Load item
     
-    func loadItems(){
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest() ){
       
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
         
         do{
           itemArray = try context.fetch(request)
@@ -142,7 +138,21 @@ class TodoListViewController: UITableViewController {
     
     
     
-    
-    
 }
 
+//MARK:- Search bar functions
+extension TodoListViewController: UISearchBarDelegate{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+          request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+
+          request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        
+        loadItems(with: request)
+        
+        tableView.reloadData()
+        
+    }
+}

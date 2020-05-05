@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    
+    //MARK: - Persistdata context
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     //MARK:- itemArray declaration
     var itemArray = [Item]()
@@ -21,7 +23,7 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadItems()
+     //   loadItems()
      
         
     }
@@ -38,7 +40,7 @@ class TodoListViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         let item = itemArray[indexPath.row]
         
-        cell.textLabel?.text = item.titlte
+        cell.textLabel?.text = item.title
         
         cell.accessoryType = item.done == true ? .checkmark : .none
         
@@ -78,10 +80,12 @@ class TodoListViewController: UITableViewController {
             if textField.text == ""{
                 textField.text = "Unnamed item"
             }
-        
-            let newItem = Item()
-            newItem.titlte = textField.text!
             
+           
+            
+            let newItem = Item(context: self.context)
+            newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             
         
@@ -105,18 +109,17 @@ class TodoListViewController: UITableViewController {
     //MARK: - Save items
     
     func saveItems(){
-        let encoder = PropertyListEncoder()
+
                    
                    do {
-                       let data = try encoder.encode(self.itemArray)
-                       try data.write(to:dataFilePath! )
+                    try context.save()
                    }catch{
-                      print("ERROR IN SAVING: \(error)")
+                    print("ERROR: \(error)")
                    }
     }
     //MARK: - Load item
     
-    func loadItems(){
+    /*func loadItems(){
         if let data = try? Data(contentsOf: dataFilePath!){
             let decoder = PropertyListDecoder ()
             
@@ -128,8 +131,8 @@ class TodoListViewController: UITableViewController {
             
             
         }
-    }
-    
+        }
+     */
     
     
     

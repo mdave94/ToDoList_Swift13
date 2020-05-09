@@ -118,13 +118,14 @@ class TodoListViewController: UITableViewController {
     //MARK: - Load item
     
     func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest() ){
-      
-        
+    
         do{
           itemArray = try context.fetch(request)
         }catch{
             print("ERROR: \(error)")
         }
+        
+        tableView.reloadData()
     }
     
     //MARK: - Delete item
@@ -142,6 +143,9 @@ class TodoListViewController: UITableViewController {
 
 //MARK:- Search bar functions
 extension TodoListViewController: UISearchBarDelegate{
+    
+    //Search BUttuon clicked
+
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let request: NSFetchRequest<Item> = Item.fetchRequest()
         
@@ -152,7 +156,24 @@ extension TodoListViewController: UISearchBarDelegate{
         
         loadItems(with: request)
         
-        tableView.reloadData()
         
     }
+    
+    // Didchange function
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+           
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+            
+        }
+    }
+    
+    
+    
+    
 }

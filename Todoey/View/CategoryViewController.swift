@@ -59,8 +59,6 @@ class CategoryViewController: UITableViewController{
         
     }
     
-    //MARK:- TableView Delegate methods
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
@@ -96,6 +94,22 @@ class CategoryViewController: UITableViewController{
         }
         tableView.reloadData()
         
+        
+    }
+    
+    //MARK:- TableView Delegate methods
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let destinationViewController = segue.destination as! TodoListViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow{
+            destinationViewController.selectedCategory = categories[indexPath.row]
+        }
         
     }
 

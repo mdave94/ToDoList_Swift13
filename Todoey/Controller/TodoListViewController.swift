@@ -26,7 +26,7 @@ class TodoListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       // print(dataFilePath)
+        print(dataFilePath)
         
        
      
@@ -63,9 +63,15 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         
-   // todoItems[indexPath.row].done = !todoItems[indexPath.row].done
-      //  deleteItem(deleteID: indexPath.row)
-        
+        if let item = todoItems?[indexPath.row]{
+            do{
+                try realm.write{
+                    item.done = !item.done
+                }
+            }catch{
+                print("error in update with realm: \(error)")
+            }
+        }
         
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
@@ -95,10 +101,7 @@ class TodoListViewController: UITableViewController {
                         
                 }catch{
                     print("Error in writing Realm : \(error)")
-                
                 }
-                
-                
             }
 
            
@@ -128,13 +131,19 @@ class TodoListViewController: UITableViewController {
         }
     
     //MARK: - Delete item
-//   func deleteItem(deleteID:Int){
-//
-//        context.delete(itemArray[deleteID])
-//
-//        itemArray.remove(at: deleteID)
-//
-//    }
+   func deleteItem(deleteID:Int){
+
+        if let item = todoItems?[deleteID]{
+               do{
+                   try realm.write{
+                    realm.delete(item)
+                   }
+               }catch{
+                   print("error in update with realm: \(error)")
+               }
+           }
+
+    }
     
     
     

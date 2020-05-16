@@ -11,8 +11,6 @@ import RealmSwift
 
 class TodoListViewController: UITableViewController {
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-    
     
     //MARK:- constants declaration
     var todoItems: Results<Item>?
@@ -26,7 +24,7 @@ class TodoListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(dataFilePath)
+       // print(dataFilePath)
         
        
      
@@ -96,6 +94,7 @@ class TodoListViewController: UITableViewController {
                     try self.realm.write{
                             let newItem = Item()
                             newItem.title = textField.text!
+                            newItem.dateCreated = Date()
                             currentCategory.items.append(newItem)
                         }
                         
@@ -114,6 +113,11 @@ class TodoListViewController: UITableViewController {
             textField = alertTextField
             
         }
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) {
+                  UIAlertAction in
+                  NSLog("Cancel Pressed")
+              }
+        alert.addAction(cancelAction)
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
@@ -150,38 +154,33 @@ class TodoListViewController: UITableViewController {
 }
 
 //MARK:- Search bar functions
-//extension TodoListViewController: UISearchBarDelegate{
-//
-//    //Search BUttuon clicked
-//
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let request: NSFetchRequest<Item> = Item.fetchRequest()
-//
-//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//
-//          request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//
-//
-//        loadItems(with: request,predicate: predicate)
-//
-//
-//    }
-//
-//    // Didchange function
-//
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        if searchBar.text?.count == 0 {
-//            loadItems()
-//
-//            DispatchQueue.main.async {
-//                searchBar.resignFirstResponder()
-//            }
-//
-//
-//        }
-//    }
-//
-//
-//
-//
-//}
+extension TodoListViewController: UISearchBarDelegate{
+
+    //Search BUttuon clicked
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@",searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        
+        tableView.reloadData()
+ 
+    }
+
+    // Didchange function
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+
+
+        }
+    }
+
+
+
+
+}

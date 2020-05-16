@@ -33,7 +33,11 @@ class CategoryViewController: UITableViewController{
         
         let alert = UIAlertController(title: "Add new Category", message: "", preferredStyle: .alert)
         
-        let action = UIAlertAction(title: "Add", style: .default) { (action) in
+        let addAction = UIAlertAction(title: "Add", style: .default) { (action) in
+            
+            if textField.text == ""{
+                       textField.text = "Unnamed item"
+            }
             
             let newCategory = Category()
             newCategory.name = textField.text!
@@ -41,8 +45,14 @@ class CategoryViewController: UITableViewController{
             self.save(category: newCategory)
             
         }
-        alert.addAction(action)
         
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) {
+            UIAlertAction in
+            NSLog("Cancel Pressed")
+        }
+        
+        alert.addAction(addAction)
+        alert.addAction(cancelAction)
         alert.addTextField { (field) in
             textField = field
             textField.placeholder = "Add new Category"
@@ -62,7 +72,6 @@ class CategoryViewController: UITableViewController{
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        
         
         
         cell.textLabel?.text = categories?[indexPath.row].name ?? "NO Categories added"

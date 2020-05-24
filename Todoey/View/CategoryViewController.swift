@@ -22,6 +22,8 @@ class CategoryViewController: UITableViewController{
         super.viewDidLoad()
         
         loadCategories()
+        
+        tableView.rowHeight = 80
 
        
     }
@@ -121,23 +123,6 @@ class CategoryViewController: UITableViewController{
 
 }
 
-//MARK:- SwipeTableCellDelegate methods
-
-extension CategoryViewController: SwipeTableViewCellDelegate{
-        
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-        
-        guard orientation == .right else { return nil }
-        
-        let deleteAction = SwipeAction(style: .destructive, title :"Delete"){ action, indexpath in
-            // Handle action
-            
-            print("deleted item")
-        }
-        
-        deleteAction.image = UIImage(named:"delete-icon")
-        
-       return [deleteAction]
-    } 
     
-}
+    
+

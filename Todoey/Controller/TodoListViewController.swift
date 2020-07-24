@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
 
 class TodoListViewController: UITableViewController {
     
@@ -16,6 +17,9 @@ class TodoListViewController: UITableViewController {
     var todoItems: Results<Item>?
     let realm = try! Realm()
     
+    var mainIndexPath: Int = 0
+    
+    
     var selectedCategory: Category?{
         didSet{
              loadItems()
@@ -23,29 +27,83 @@ class TodoListViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
+        let longPressGestrude = UILongPressGestureRecognizer()
+        self.view.addGestureRecognizer(longPressGestrude)
+        longPressGestrude.addTarget(self, action: #selector(clickLongPress))
+        
+        
         super.viewDidLoad()
-       // print(dataFilePath)
+       
         
        
      
         
     }
     
+    @objc func clickLongPress(_ longPressGestureRecognizer: UILongPressGestureRecognizer){
+        print("table element long pressed !")
+        if longPressGestureRecognizer.state == UIGestureRecognizer.State.began {
+
+            let touchPoint = longPressGestureRecognizer.location(in: self.view)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                mainIndexPath = indexPath.row
+                   
+           }
+        }
+        let alert = UIAlertController(title: "Modify element", message: nil, preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "Edit", style: .default) { _ in
+       
+                      
+
+                     
+                      self.tableView.reloadData()
+        })
+
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+            
+            print("deleteACTION")
+            self.deleteItem(deleteID: self.mainIndexPath)
+             self.tableView.reloadData()
+        })
+        
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) {
+                         UIAlertAction in
+                         NSLog("Cancel Pressed")
+                }
     
+        
+    alert.addAction(cancelAction)
+               
+    present(alert, animated: true, completion: nil)
+
+        
+        
+     
+        
+    }
     //MARK:-  Datasource methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
          
         return todoItems?.count ?? 1
     }
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
-         
+        
+        mainIndexPath = indexPath.row
+        
         if let item = todoItems?[indexPath.row]{
             cell.textLabel?.text = item.title
-                        
-            cell.accessoryType = item.done ? .checkmark : .none
+            
+            //cell.accessoryType = item.done ? .checkmark : .none
+            cell.backgroundColor = item.done ? .white : .green
         }else{
             cell.textLabel?.text = " No items added yet"
         }
@@ -63,6 +121,9 @@ class TodoListViewController: UITableViewController {
         
         if let item = todoItems?[indexPath.row]{
             do{
+                
+                
+                
                 try realm.write{
                     item.done = !item.done
                 }
@@ -113,6 +174,8 @@ class TodoListViewController: UITableViewController {
             textField = alertTextField
             
         }
+        
+        //Cancel button
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) {
                   UIAlertAction in
                   NSLog("Cancel Pressed")
@@ -136,7 +199,7 @@ class TodoListViewController: UITableViewController {
     
     //MARK: - Delete item
    func deleteItem(deleteID:Int){
-
+print("DeleteItem")
         if let item = todoItems?[deleteID]{
                do{
                    try realm.write{
@@ -148,6 +211,7 @@ class TodoListViewController: UITableViewController {
            }
 
     }
+     
     
     
     
@@ -183,4 +247,24 @@ extension TodoListViewController: UISearchBarDelegate{
 
 
 
+}
+
+extension TodoListViewController: SwipeTableViewCellDelegate{
+        
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        print("LEFUT A SWIPE")
+        guard orientation == .right else { return nil }
+        
+        let deleteAction = SwipeAction(style: .destructive, title :"Delete"){ action, indexpath in
+            // Handle action
+            
+            print("deleted item")
+        }
+        
+        deleteAction.image = UIImage(named:"delete-icon")
+        
+       return [deleteAction]
+    }
+    
+    
 }

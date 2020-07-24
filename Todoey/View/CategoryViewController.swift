@@ -68,6 +68,10 @@ class CategoryViewController: UITableViewController{
         return categories?.count ?? 1
         
     }
+    // Setting row height
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+           return 60
+       }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -75,7 +79,7 @@ class CategoryViewController: UITableViewController{
         
         
         cell.textLabel?.text = categories?[indexPath.row].name ?? "NO Categories added"
-        
+      
         return cell
         
     }
@@ -119,6 +123,7 @@ class CategoryViewController: UITableViewController{
         
     }
 
+    
 }
 
 //MARK:- SwipeTableCellDelegate methods
@@ -126,6 +131,7 @@ class CategoryViewController: UITableViewController{
 extension CategoryViewController: SwipeTableViewCellDelegate{
         
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        print("LEFUT A SWIPE")
         
         guard orientation == .right else { return nil }
         

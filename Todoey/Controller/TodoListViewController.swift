@@ -39,9 +39,13 @@ class TodoListViewController: UITableViewController {
      
         
     }
-    
+    //MARK:- Long press gestrude methods
     @objc func clickLongPress(_ longPressGestureRecognizer: UILongPressGestureRecognizer){
         print("table element long pressed !")
+         
+        
+        
+        // Getting the index.row from the pressed element
         if longPressGestureRecognizer.state == UIGestureRecognizer.State.began {
 
             let touchPoint = longPressGestureRecognizer.location(in: self.view)
@@ -54,17 +58,30 @@ class TodoListViewController: UITableViewController {
 
         alert.addAction(UIAlertAction(title: "Edit", style: .default) { _ in
        
-                      
-
+            
+          if let currentCategory = self.selectedCategory {
+                        do{
+                            try self.realm.write{
+                                currentCategory.items[self.mainIndexPath].title = "TESZ 1 "
+                                    
+                                }
+                                
+                        }catch{
+                            print("Error in writing Realm : \(error)")
+                        }
+                    }
+                    
+            
+            
                      
                       self.tableView.reloadData()
         })
-
+        
+       
         alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
             
-            print("deleteACTION")
             self.deleteItem(deleteID: self.mainIndexPath)
-             self.tableView.reloadData()
+            self.tableView.reloadData()
         })
         
         
@@ -73,7 +90,7 @@ class TodoListViewController: UITableViewController {
                          NSLog("Cancel Pressed")
                 }
     
-        
+ 
     alert.addAction(cancelAction)
                
     present(alert, animated: true, completion: nil)

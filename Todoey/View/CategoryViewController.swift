@@ -3,7 +3,6 @@
 //  Todoey
 //
 //  Created by David on 2020. 05. 06..
-//  Copyright © 2020. App Brewery. All rights reserved.
 //
 
 import UIKit
@@ -22,6 +21,8 @@ class CategoryViewController: UITableViewController{
         super.viewDidLoad()
         
         loadCategories()
+        
+        tableView.rowHeight = 80
 
        
     }
@@ -126,6 +127,7 @@ class CategoryViewController: UITableViewController{
     
 }
 
+
 //MARK:- SwipeTableCellDelegate methods
 
 extension CategoryViewController: SwipeTableViewCellDelegate{
@@ -145,5 +147,6 @@ extension CategoryViewController: SwipeTableViewCellDelegate{
         
        return [deleteAction]
     } 
-    
 }
+    
+

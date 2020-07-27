@@ -43,17 +43,20 @@ class TodoListViewController: UITableViewController {
     @objc func clickLongPress(_ longPressGestureRecognizer: UILongPressGestureRecognizer){
         print("table element long pressed !")
          
-        
+       var textField1 = UITextField()
+        textField1.text = "TEXTFIELD SZOVEG"
         
         // Getting the index.row from the pressed element
         if longPressGestureRecognizer.state == UIGestureRecognizer.State.began {
 
             let touchPoint = longPressGestureRecognizer.location(in: self.view)
             if let indexPath = tableView.indexPathForRow(at: touchPoint) {
-                mainIndexPath = indexPath.row
+                self.mainIndexPath = indexPath.row
+                print("MAININDEXPATH :  \(self.mainIndexPath)")
                    
            }
         }
+         
         let alert = UIAlertController(title: "Modify element", message: nil, preferredStyle: .actionSheet)
 
         alert.addAction(UIAlertAction(title: "Edit", style: .default) { _ in
@@ -62,7 +65,7 @@ class TodoListViewController: UITableViewController {
           if let currentCategory = self.selectedCategory {
                         do{
                             try self.realm.write{
-                                currentCategory.items[self.mainIndexPath].title = "TESZ 1 "
+                                currentCategory.items[self.mainIndexPath].title = textField1.text!
                                     
                                 }
                                 
@@ -74,7 +77,7 @@ class TodoListViewController: UITableViewController {
             
             
                      
-                      self.tableView.reloadData()
+            self.tableView.reloadData()
         })
         
        
@@ -114,13 +117,14 @@ class TodoListViewController: UITableViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        mainIndexPath = indexPath.row
+        
         
         if let item = todoItems?[indexPath.row]{
             cell.textLabel?.text = item.title
             
             //cell.accessoryType = item.done ? .checkmark : .none
-            cell.backgroundColor = item.done ? .white : .green
+            
+            cell.backgroundColor = item.done ? .green : .white
         }else{
             cell.textLabel?.text = " No items added yet"
         }

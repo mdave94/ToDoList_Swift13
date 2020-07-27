@@ -52,12 +52,13 @@ class TodoListViewController: UITableViewController {
             let touchPoint = longPressGestureRecognizer.location(in: self.view)
             if let indexPath = tableView.indexPathForRow(at: touchPoint) {
                 self.mainIndexPath = indexPath.row
-                print("MAININDEXPATH :  \(self.mainIndexPath)")
+              
+                textField1.text = String(self.mainIndexPath)
                    
            }
         }
          
-        let alert = UIAlertController(title: "Modify element", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Modify element", message: nil, preferredStyle: .alert)
 
         alert.addAction(UIAlertAction(title: "Edit", style: .default) { _ in
        
@@ -80,8 +81,12 @@ class TodoListViewController: UITableViewController {
             self.tableView.reloadData()
         })
         
-       
-        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { _ in
+       alert.addTextField { (alertTextField) in
+                 alertTextField.placeholder = "Chancge the title"
+                 textField1 = alertTextField
+                 
+            }
+        alert.addAction(UIAlertAction(title: "Delete the element", style: .destructive) { _ in
             
             self.deleteItem(deleteID: self.mainIndexPath)
             self.tableView.reloadData()

@@ -44,7 +44,7 @@ class TodoListViewController: UITableViewController {
         print("table element long pressed !")
          
        var textField1 = UITextField()
-        textField1.text = "TEXTFIELD SZOVEG"
+        textField1.text = ""
         
         // Getting the index.row from the pressed element
         if longPressGestureRecognizer.state == UIGestureRecognizer.State.began {

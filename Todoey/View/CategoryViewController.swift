@@ -12,12 +12,16 @@ import SwipeCellKit
 class CategoryViewController: UITableViewController{
     
     let realm = try! Realm()
-    
+    var nameForDelete: String = ""
     var categories: Results<Category>?
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
+        let longPressGestrude = UILongPressGestureRecognizer()
+        self.view.addGestureRecognizer(longPressGestrude)
+        longPressGestrude.addTarget(self, action: #selector(clickLongPress))
+        
         super.viewDidLoad()
         
         loadCategories()
@@ -25,6 +29,53 @@ class CategoryViewController: UITableViewController{
         tableView.rowHeight = 80
 
        
+    }
+    
+    //MARK:- clickLongpress
+    @objc func clickLongPress(_ longPressGestureRecognizer: UILongPressGestureRecognizer){
+        print("table element long pressed !")
+
+       var textField1 = UITextField()
+        textField1.text = "TEXTFIELD SZOVEG"
+
+        // Getting the index.row from the pressed element
+        if longPressGestureRecognizer.state == UIGestureRecognizer.State.began {
+
+
+            let touchPoint = longPressGestureRecognizer.location(in: self.view)
+            if let indexPath = tableView.indexPathForRow(at: touchPoint) {
+                self.nameForDelete = categories?[indexPath.row].name as! String
+
+
+
+           }
+        }
+
+        let alert = UIAlertController(title: "Delete", message: nil, preferredStyle: .alert)
+
+
+
+        alert.addAction(UIAlertAction(title: "Delete the element", style: .destructive) { _ in
+
+         self.deleteCategory(self.nameForDelete)
+            self.tableView.reloadData()
+        })
+
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel) {
+                         UIAlertAction in
+                         NSLog("Cancel Pressed")
+                }
+
+
+    alert.addAction(cancelAction)
+
+    present(alert, animated: true, completion: nil)
+
+
+
+
+
     }
 
 
@@ -123,7 +174,30 @@ class CategoryViewController: UITableViewController{
         }
         
     }
+    func deleteCategory (_ categoryName: String) {
 
+          let categoryForDelete = realm.objects(Category.self).filter("name = '\(categoryName)'")
+          
+        
+        
+          let itemsForDelete = realm.objects(Item.self).filter("ANY parentCategory.name = '\(categoryName)'")
+    
+         
+          print("Category in delete : \(categoryForDelete)   || items : \(itemsForDelete)")
+              do{
+                    try realm.write{
+                        realm.delete(itemsForDelete)
+                        realm.delete(categoryForDelete)
+                    
+                    }
+                }catch{
+                    print("error in update with realm: \(error)")
+                }
+
+            print("NAMEFORDELETE : \(categoryName)")
+
+
+      }
     
 }
 
